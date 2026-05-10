@@ -24,47 +24,45 @@ void main() {
     double area_do_triangulo = modulo_produto_vetorial / 2;
 
     // --- Tabela de vetores e módulos ---
-    String h1 = String.format("%-6s %-14s %-28s %-12s", "Vetor", "Componentes", "Vetor Unitario", "Modulo");
-    IO.println("-".repeat(h1.length()));
-    IO.println(h1);
-    IO.println("-".repeat(h1.length()));
-    IO.println(String.format("%-6s %-14s %-28s %-12s",
-            "AB",
-            String.format("(%.0f, %.0f, %.0f)", ab[0], ab[1], ab[2]),
-            String.format("(%.4f, %.4f, %.4f)", uab[0], uab[1], uab[2]),
-            String.format("%.4f", modulo_ab)
-    ));
-    IO.println(String.format("%-6s %-14s %-28s %-12s",
-            "AC",
-            String.format("(%.0f, %.0f, %.0f)", ac[0], ac[1], ac[2]),
-            String.format("(%.4f, %.4f, %.4f)", uac[0], uac[1], uac[2]),
-            String.format("%.4f", modulo_ac)
-    ));
-    IO.println("-".repeat(h1.length()));
+    String[] colunas_vetores = {"Vetor", "Componentes", "Vetor Unitario", "Modulo"};
+    int[] larguras_vetores = {6, 14, 28, 12};
+    
+    Object[][] dados_vetores = {
+        {"AB", String.format("(%.0f, %.0f, %.0f)", ab[0], ab[1], ab[2]), 
+         String.format("(%.4f, %.4f, %.4f)", uab[0], uab[1], uab[2]), 
+         String.format("%.4f", modulo_ab)},
+        {"AC", String.format("(%.0f, %.0f, %.0f)", ac[0], ac[1], ac[2]), 
+         String.format("(%.4f, %.4f, %.4f)", uac[0], uac[1], uac[2]), 
+         String.format("%.4f", modulo_ac)}
+    };
+    
+    FormatadorTabela.imprimir_tabela_completa(colunas_vetores, dados_vetores, larguras_vetores);
 
     // --- Tabela de ângulo ---
-    String h2 = String.format("%-20s %-20s %-20s %-15s", "AB · AC", "|AB| × |AC|", "cos(θ)", "θ (graus)");
-    IO.println("\n" + "-".repeat(h2.length()));
-    IO.println(h2);
-    IO.println("-".repeat(h2.length()));
+    IO.println();
+    String[] colunas_angulo = {"AB · AC", "|AB| × |AC|", "cos(θ)", "θ (graus)"};
+    int[] larguras_angulo = {20, 20, 20, 15};
+    
     double produto_escalar = (ab[0] * ac[0]) + (ab[1] * ac[1]) + (ab[2] * ac[2]);
-    IO.println(String.format("%-20.4f %-20.4f %-20.4f %-15.4f",
-            produto_escalar,
-            modulo_ab * modulo_ac,
-            produto_escalar / (modulo_ab * modulo_ac),
-            angulo
-    ));
-    IO.println("-".repeat(h2.length()));
+    Object[][] dados_angulo = {{
+        String.format("%.4f", produto_escalar),
+        String.format("%.4f", modulo_ab * modulo_ac),
+        String.format("%.4f", produto_escalar / (modulo_ab * modulo_ac)),
+        String.format("%.4f", angulo)
+    }};
+    
+    FormatadorTabela.imprimir_tabela_completa(colunas_angulo, dados_angulo, larguras_angulo);
 
     // --- Tabela do produto vetorial e área ---
-    String h3 = String.format("%-25s %-20s %-15s", "AB × AC", "|AB × AC|", "Área (m²)");
-    IO.println("\n" + "-".repeat(h3.length()));
-    IO.println(h3);
-    IO.println("-".repeat(h3.length()));
-    IO.println(String.format("%-25s %-20.4f %-15.4f",
-            String.format("(%.0f, %.0f, %.0f)", i, j, k),
-            modulo_produto_vetorial,
-            area_do_triangulo
-    ));
-    IO.println("-".repeat(h3.length()));
+    IO.println();
+    String[] colunas_produto = {"AB × AC", "|AB × AC|", "Área (m²)"};
+    int[] larguras_produto = {25, 20, 15};
+    
+    Object[][] dados_produto = {{
+        String.format("(%.0f, %.0f, %.0f)", i, j, k),
+        String.format("%.4f", modulo_produto_vetorial),
+        String.format("%.4f", area_do_triangulo)
+    }};
+    
+    FormatadorTabela.imprimir_tabela_completa(colunas_produto, dados_produto, larguras_produto);
 }

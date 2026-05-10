@@ -5,12 +5,11 @@ void main() {
 
     double mAnterior = a;
 
-    // As linhas 8 a 13, 26, 29, 33 e 36 a 37 formatam a saída no terminal para melhorar a legibilidade e a experiência do usuário.
-    String header = String.format("%-10s %-12s %-12s %-12s %-12s %-12s %-12s %-12s", "Iteração", "a", "m", "b", "f(a)", "f(m)", "f(b)", "e");
-
-    IO.println("-".repeat(header.length()));
-    IO.println(header);
-    IO.println("-".repeat(header.length()));
+    // Usando FormatadorTabela para melhorar a legibilidade e a experiência do usuário.
+    String[] colunas = {"Iteração", "a", "m", "b", "f(a)", "f(m)", "f(b)", "e"};
+    int[] larguras = {10, 12, 12, 12, 12, 12, 12, 12};
+    
+    FormatadorTabela.imprimir_cabecalho(colunas, larguras);
 
     for (int i = 1; true; i++) {
         double m = (a + b) / 2.0;
@@ -30,10 +29,13 @@ void main() {
             if (e < tolerancia) convergiu = true;
         }
 
-        IO.println(String.format("%-10d %-12.7f %-12.7f %-12.7f %-12.7f %-12.7f %-12.7f %-12s", i, a, m, b, fa, fm, fb, erro));
+        Object[] dados = {i, String.format("%.7f", a), String.format("%.7f", m), String.format("%.7f", b), 
+                         String.format("%.7f", fa), String.format("%.7f", fm), String.format("%.7f", fb), erro};
+        FormatadorTabela.imprimir_linha_dados(dados, larguras);
 
         if (convergiu) {
-            IO.println("-".repeat(header.length()));
+            int comprimento_linha = 10 + 7 * 12 + 7; // soma das larguras + espaços
+            FormatadorTabela.imprimir_rodape(comprimento_linha);
             IO.println(String.format("Raiz encontrada: %.7f (após %d iterações)", m, i));
             break;
         }
