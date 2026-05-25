@@ -1,4 +1,4 @@
-# Numerical Analysis - Dimensionamento Estrutural
+# Projeto 1 - Versão A: Numerical Analysis - Dimensionamento Estrutural
 
 [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -51,7 +51,6 @@ O software oferece múltiplas abordagens para comparação de precisão e efici�
 ## 📄 Estrutura do Código
 *   `src/index.java`: Ponto de entrada com menu interativo.
 *   `src/parte1.java` a `src/parte5.java`: Implementação modular de cada desafio.
-*   `Edital_A3.pdf`: Documentação com os requisitos detalhados e fórmulas matemáticas.
 
 ## ⚖️ Licença
 Este projeto está licenciado sob a [Licença MIT](LICENSE).
