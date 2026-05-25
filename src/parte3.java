@@ -52,8 +52,8 @@ public class parte3 {
     }
 
     private static void metodo_do_trapezio () {
-        double h = 0.5;
-        double[] subintervalos = new double[31];
+        double h = 2.5;
+        double[] subintervalos = new double[7];
         double soma_impares = 0;
         double soma_pares = 0;
 

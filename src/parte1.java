@@ -65,10 +65,13 @@ public class parte1 {
         IO.println("");
 
         double[] f = new double[n];
-        f[3] = matriz[3][4] / matriz[3][3];
-        f[2] = (matriz[2][4] + f[3]) / matriz[2][2];
-        f[1] = (matriz[1][4] + f[2]) / matriz[1][1];
-        f[0] = (matriz[0][4] + f[1]) / matriz[0][0];
+        for (int i = n - 1; i >= 0; i--) {
+            f[i] = matriz[i][n];
+            for (int j = i + 1; j < n; j++) {
+                f[i] -= matriz[i][j] * f[j];
+            }
+            f[i] /= matriz[i][i];
+        }
 
         IO.println("Incognitas");
         IO.println("-".repeat(60));
@@ -102,15 +105,13 @@ public class parte1 {
             f_anterior[3] = f[3];
             f[3] = (0 + f[2]) / 3;
 
-            for (int j = 0; j < f.length; ++j) {
+            pode_parar = true;
+            for (int j = 0; j < f.length; j++) {
                 erro = Math.abs((f[j] - f_anterior[j]) / f[j]);
-
                 if (erro > tolerancia) {
                     pode_parar = false;
                     break;
                 }
-
-                pode_parar = true;
             }
 
             IO.println(String.format("%-12d%-12f%-12f%-12f%-12f", i, f[0], f[1], f[2], f[3]));
