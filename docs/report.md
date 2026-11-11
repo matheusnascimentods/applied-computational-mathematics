@@ -1,6 +1,6 @@
 # Resolução do Edital A3 — Matemática Computacional Aplicada
 
-> Versão em Markdown do Relatório Técnico entregue na avaliação A3. Os nomes e RAs dos integrantes foram omitidos. O enunciado completo está em [`notice.md`](notice.md).
+> Versão em Markdown do Relatório Técnico entregue na avaliação A3. Os nomes e RAs dos integrantes foram omitidos, e os trechos sobre a implementação foram atualizados para refletir o código atual do repositório. O enunciado completo está em [`notice.md`](notice.md).
 
 **IDE utilizada:** IntelliJ IDEA
 
@@ -73,8 +73,10 @@ double[][] matriz = {
 
 - A matriz aumentada foi representada como `double[][]` — a última coluna é o vetor de termos independentes, evitando a necessidade de arrays separados.
 - O escalonamento é feito com dois loops aninhados: o externo percorre as colunas-pivô e o interno as linhas abaixo do pivô.
-- A substituição retroativa foi feita manualmente (hard-coded para 4 variáveis) por ser um sistema pequeno e tornar o código mais legível.
-- No Gauss-Seidel, cada variável é recalculada sequencialmente dentro do mesmo loop, usando imediatamente os valores atualizados — essa é a essência do método e o que o diferencia do Jacobi.
+- O programa exibe a matriz inicial e a matriz triangular superior obtida após o escalonamento.
+- A substituição retroativa é feita com um laço que percorre as linhas de baixo para cima, então funciona para um sistema de qualquer tamanho $n$, e não só para as 4 variáveis do problema.
+- No Gauss-Seidel, cada variável é recalculada sequencialmente dentro do mesmo loop, usando imediatamente os valores atualizados — essa é a essência do método e o que o diferencia do Jacobi. Partindo de $F = (0, 0, 0, 0)$, o método converge em 9 iterações.
+- Resultado da Eliminação de Gauss: $F_1 = 14{,}967320$, $F_2 = 9{,}869281$, $F_3 = 24{,}509804$, $F_4 = 8{,}169935$. O Gauss-Seidel chega a $F_1 = 14{,}967309$, $F_2 = 9{,}869273$, $F_3 = 24{,}509800$, $F_4 = 8{,}169933$, dentro da tolerância de $10^{-5}$.
 - O programa oferece um submenu para o usuário escolher qual resolução visualizar.
 
 ---
@@ -96,7 +98,7 @@ $$f(x) = x^3 - 5x^2 + 8x - 5$$
 - A Bisseção é o método mais robusto e confiável para encontrar raízes: se a raiz existe no intervalo e a função é contínua, ele sempre converge.
 - Não precisa calcular derivadas (como Newton-Raphson), simplificando a implementação.
 - O edital já fornece o intervalo $[2, 4]$, o que é exatamente o input que a Bisseção precisa.
-- Embora seja mais lento que Newton-Raphson (convergência linear vs. quadrática), a precisão de $10^{-7}$ é atingida em ~24 iterações, o que é perfeitamente aceitável.
+- Embora seja mais lento que Newton-Raphson (convergência linear vs. quadrática), a precisão de $10^{-7}$ é atingida em 25 iterações, o que é perfeitamente aceitável.
 - É o método ideal quando se tem um intervalo definido e se quer garantia de convergência sem depender de uma boa estimativa inicial.
 
 **Como funciona:**
@@ -121,6 +123,7 @@ private static double funcao(double x) {
 - O critério de parada compara a diferença absoluta entre pontos médios consecutivos ($|m - m_{anterior}|$), não o valor de $f(m)$, garantindo precisão na localização da raiz.
 - Na primeira iteração o erro é marcado como "N/A", pois não há ponto médio anterior.
 - A saída é uma tabela formatada com `String.format()` mostrando $a$, $m$, $b$, $f(a)$, $f(m)$, $f(b)$ e o erro a cada iteração — essencial para o memorial de cálculo exigido pelo edital.
+- Resultado: raiz $x \approx 2{,}7548776$, encontrada após 25 iterações.
 
 ---
 
@@ -245,7 +248,7 @@ $$
 \end{aligned}
 $$
 
-- Um submenu permite ao usuário escolher qual método visualizar.
+- Um submenu permite ao usuário escolher entre Simpson 1/3, Trapézios e Derivação Numérica.
 - As tabelas exibem o índice, o valor de $z$ e $w(z)$ para cada subintervalo, permitindo acompanhamento passo a passo.
 
 #### 3. Derivação Numérica
@@ -254,69 +257,51 @@ $$
 
 - Permite encontrar a taxa de variação de uma função em um ponto sem derivar analiticamente.
 - Usa valores da própria função em pontos vizinhos para aproximar a derivada.
-- Permite comparar a precisão entre os três métodos: progressivo, regressivo e central.
+
+**Por que a Diferença Centrada?**
+
+- Entre as diferenças finitas (progressiva, regressiva e centrada), a centrada é a mais precisa: seu erro é de ordem $O(h^2)$, contra $O(h)$ das outras duas.
+- Ela compensa os erros das diferenças progressiva e regressiva, traçando uma reta diretamente do ponto de trás até o ponto da frente. Como a distância entre esses dois pontos é $2h$, o divisor é dobrado.
+
+**Fórmula:**
+
+$$w'(z) \approx \frac{w(z + h) - w(z - h)}{2h}$$
 
 **Decisões de implementação e cálculo:**
 
-- Na função `derivacao_numerica()`, o algoritmo inicia com a definição de dois valores fundamentais:
-  - $z = 7{,}5$: o ponto de interesse (o "ponto médio" onde desejamos descobrir o valor da derivada).
-  - $h = 0{,}5$: o "passo", ou incremento espacial. Ele determina a distância usada para avaliar o comportamento da curva antes e depois do ponto alvo. Um valor pequeno de $h$ é essencial para garantir a precisão da estimativa.
-- O sistema calcula o valor da função $w(z)$ em três coordenadas ao longo do eixo $z$ para mapear as variações:
-  - `w_z`: valor da função exatamente no ponto alvo, ou seja, $w(7{,}5)$.
-  - `w_frente`: valor da função deslocado um passo à frente, $w(7{,}5 + 0{,}5) = w(8{,}0)$.
-  - `w_tras`: valor da função deslocado um passo para trás, $w(7{,}5 - 0{,}5) = w(7{,}0)$.
-
-**A) Derivada Progressiva (Diferença para Frente)** — calcula a taxa de variação considerando a diferença entre o ponto atual e o próximo ponto à frente:
+- Na função `derivacao_numerica()`, o algoritmo define dois valores fundamentais:
+  - `z_medio = 7.5`: o ponto de interesse, ponto médio da torre de 15 m ($15/2 = 7{,}5$ metros).
+  - `h = 0.5`: o "passo", ou incremento espacial. Ele determina a distância usada para avaliar a curva antes e depois do ponto alvo. Um valor pequeno de $h$ garante a precisão da estimativa; com 0,5, os pontos avaliados ficam próximos do ponto médio: 7,0 e 8,0.
+- O programa calcula a função $w(z)$ um passo à frente e um passo atrás:
+  - `w_frente`: $w(7{,}5 + 0{,}5) = w(8{,}0)$.
+  - `w_tras`: $w(7{,}5 - 0{,}5) = w(7{,}0)$.
 
 ```java
-double prog = (w_frente - w_z) / h;
+double w_frente = w(z_medio + h);
+double w_tras = w(z_medio - h);
+double derivada = (w_frente - w_tras) / (2 * h);
 ```
 
-$$\frac{w(z + h) - w(z)}{h}$$
-
-**B) Derivada Regressiva (Diferença para Trás)** — calcula a taxa de variação observando a diferença entre o ponto atual e o ponto anterior:
-
-```java
-double regr = (w_z - w_tras) / h;
-```
-
-$$\frac{w(z) - w(z - h)}{h}$$
-
-**C) Derivada Central (Diferença Centrada)** — considerada a estimativa mais precisa, esta abordagem compensa os erros das diferenças progressiva e regressiva. Ela calcula a inclinação média traçando uma reta diretamente do ponto de trás até o ponto da frente. Como a distância entre esses dois pontos extremos é $2h$, o divisor é dobrado:
-
-```java
-double cent = (w_frente - w_tras) / (2 * h);
-```
-
-$$\frac{w(z + h) - w(z - h)}{2h}$$
-
-**Cálculo detalhado:**
-
-- Como pede o enunciado da Parte 3, primeiro é necessário calcular o ponto médio da torre: basta dividir a altura total pela metade, ou seja, $15/2 = 7{,}5$ metros.
-- Obtido o ponto médio, define-se o passo (espaçamento). Usamos o passo de 0,5 para que a taxa de variação no ponto médio seja ainda mais precisa, por tratar-se de valores próximos a ele: 7,0 e 8,0.
 - Aplicando esses valores na função $w(z) = 0{,}1z^3 - 1{,}5z^2 + 10z + 20$:
 
 $$
 \begin{aligned}
 w(7{,}0) &= 0{,}1 \times 7^3 - 1{,}5 \times 7^2 + 10 \times 7 + 20 = 34{,}3 - 73{,}5 + 90 = 50{,}8 \\
-w(7{,}5) &= 0{,}1 \times 7{,}5^3 - 1{,}5 \times 7{,}5^2 + 10 \times 7{,}5 + 20 = 42{,}1875 - 84{,}375 + 75 + 20 = 52{,}8125 \\
 w(8{,}0) &= 0{,}1 \times 8^3 - 1{,}5 \times 8^2 + 10 \times 8 + 20 = 51{,}2 - 96 + 80 + 20 = 55{,}2
 \end{aligned}
 $$
 
-**Fórmulas:**
+- **Resultado (Diferença Centrada):** $\dfrac{55{,}2 - 50{,}8}{2 \times 0{,}5} = 4{,}4$
 
-| Diferença | Fórmula |
-| :--- | :--- |
-| Progressiva | $w'(z) \approx \dfrac{w(z+h) - w(z)}{h}$ |
-| Regressiva | $w'(z) \approx \dfrac{w(z) - w(z-h)}{h}$ |
-| Central | $w'(z) \approx \dfrac{w(z+h) - w(z-h)}{2h}$ |
+**Comparação com as outras diferenças finitas (cálculo manual):** para avaliar a escolha, as diferenças progressiva e regressiva foram calculadas à mão com o mesmo $h$, usando também $w(7{,}5) = 0{,}1 \times 7{,}5^3 - 1{,}5 \times 7{,}5^2 + 10 \times 7{,}5 + 20 = 52{,}8125$. Elas não são calculadas pelo programa.
 
-Aplicando as fórmulas com $z = 7{,}5$ e $h = 0{,}5$:
+| Diferença | Fórmula | Resultado |
+| :--- | :--- | :---: |
+| Progressiva | $\dfrac{w(z+h) - w(z)}{h} = \dfrac{55{,}2 - 52{,}8125}{0{,}5}$ | $4{,}775$ |
+| Regressiva | $\dfrac{w(z) - w(z-h)}{h} = \dfrac{52{,}8125 - 50{,}8}{0{,}5}$ | $4{,}025$ |
+| **Centrada (implementada)** | $\dfrac{w(z+h) - w(z-h)}{2h} = \dfrac{55{,}2 - 50{,}8}{1}$ | $\mathbf{4{,}4}$ |
 
-- **Progressiva:** $(55{,}2 - 52{,}8125) / 0{,}5 = 4{,}775$
-- **Regressiva:** $(52{,}8125 - 50{,}8) / 0{,}5 = 4{,}025$
-- **Central:** $(55{,}2 - 50{,}8) / (2 \times 0{,}5) = 4{,}4$
+Como $w(z)$ é cúbica, a derivada exata em $z = 7{,}5$ é $w'(7{,}5) = 0{,}3 \times 7{,}5^2 - 3 \times 7{,}5 + 10 = 4{,}375$: a diferença centrada (4,4) é a que mais se aproxima.
 
 ---
 
@@ -435,7 +420,7 @@ Por fim, realizou-se a soma de todos os termos:
 
 $$P(3) = 0 + (-0{,}675) + (-1{,}40625) + 0{,}1125 \approx -1{,}97\ \text{mm}$$
 
-Portanto, a deflexão estimada da viga principal no ponto de 3 m é aproximadamente **-1,97 mm**, indicando deslocamento vertical descendente da estrutura.
+Portanto, a deflexão estimada da viga principal no ponto de 3 m é aproximadamente **-1,97 mm** (o programa exibe $-1{,}9687$ mm), indicando deslocamento vertical descendente da estrutura.
 
 ### Como adaptamos para Java
 
@@ -463,10 +448,9 @@ src/
 ├── index.java             → Menu principal (ponto de entrada)
 ├── parte1.java            → Sistemas lineares (Gauss + Gauss-Seidel)
 ├── parte2.java            → Raízes (Bisseção)
-├── parte3.java            → Integração (Simpson + Trapézios)
+├── parte3.java            → Integração (Simpson + Trapézios) e derivação
 ├── parte4.java            → Álgebra vetorial
-├── parte5.java            → Interpolação (Lagrange)
-└── FormatadorTabela.java  → Utilitário de formatação de tabelas
+└── parte5.java            → Interpolação (Lagrange)
 ```
 
 ### Decisões Arquiteturais
@@ -475,19 +459,18 @@ src/
 | :--- | :--- |
 | Uma classe por parte | Separação de responsabilidades: cada arquivo resolve um problema independente |
 | Método `executar()` estático | Permite chamada direta pelo menu sem instanciar objetos |
-| Submenus nas Partes 1 e 3 | Essas partes resolvem o mesmo problema com dois métodos diferentes; o submenu facilita a demonstração |
-| `FormatadorTabela` | Classe utilitária para padronizar a formatação de todas as tabelas de saída |
+| Submenus nas Partes 1 e 3 | A Parte 1 compara dois métodos para o mesmo sistema e a Parte 3 reúne Simpson, Trapézios e derivação; o submenu facilita a demonstração |
 | `String.format()` com `%-Ns` | Alinhamento à esquerda com largura fixa para tabelas legíveis no console |
-| `IO.println()` | Abstração para saída, facilitando eventuais mudanças (ex.: redirecionar para arquivo) |
+| `IO.println()` | Classe `java.lang.IO` do Java 25, que simplifica a escrita no console sem `System.out` |
 | Uso de `Math.pow()` e `Math.sqrt()` | Operações matemáticas nativas do Java — sem dependências externas |
 
 ### Adaptação ao Java — Pontos-Chave
 
-1. **Sem bibliotecas externas:** todo o projeto usa apenas `java.util.Scanner`, `java.util.Arrays` e `java.lang.Math`. Isso demonstra que os métodos foram implementados "do zero", como o edital exige.
+1. **Sem bibliotecas externas:** todo o projeto usa apenas `java.util.Scanner`, `java.util.Arrays`, `java.lang.Math` e `java.lang.IO`. Isso demonstra que os métodos foram implementados "do zero", como o edital exige.
 2. **Arrays nativos vs. classes:** optamos por `double[]` e `double[][]` em vez de criar classes `Vetor` ou `Matriz`. Para o escopo do projeto (sistemas 4×4, vetores 3D), a simplicidade é vantajosa.
 3. **Streams API (Java 8+):** usada na Parte 5 para filtrar pontos de interpolação — demonstra conhecimento de Java moderno sem comprometer a legibilidade.
 4. **Switch expressions (Java 14+):** o uso de `case ->` em vez de `case: break` torna o código mais limpo e evita fall-through acidental.
-5. **Unnamed classes e instance main methods (Java 21+):** o `index.java` usa `void main()` sem classe declarada, recurso moderno do Java que simplifica o ponto de entrada.
+5. **Arquivo-fonte compacto e `main` de instância (Java 25):** o `index.java` usa `void main()` sem classe declarada, recurso moderno do Java que simplifica o ponto de entrada. Por isso, e pelo uso de `java.lang.IO`, o projeto exige o JDK 25.
 
 ## Resumo: Por que cada método?
 
@@ -496,6 +479,6 @@ src/
 | 1 (Exato) | Eliminação de Gauss | Solução exata, referência para comparação |
 | 1 (Iterativo) | Gauss-Seidel | Converge mais rápido que Jacobi; sistema é diagonalmente dominante |
 | 2 | Bisseção | Garantia de convergência no intervalo dado; não precisa de derivada |
-| 3 | Simpson 1/3 + Trapézios | Exigência do edital; Simpson como referência, Trapézios para comparação |
+| 3 | Simpson 1/3 + Trapézios + Diferença Centrada | Exigência do edital; Simpson como referência, Trapézios para comparação e diferença centrada como derivada mais precisa |
 | 4 | Produto Escalar + Vetorial | Métodos canônicos para ângulo entre vetores e área/normal de superfície |
 | 5 | Lagrange | Cálculo direto sem sistemas de equações; ideal para poucos pontos |
