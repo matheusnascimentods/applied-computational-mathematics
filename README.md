@@ -73,7 +73,7 @@ Um programa de console com um menu por parte do edital, que executa cada método
 | **Interface** | Console (menus numéricos lidos com `Scanner`) |
 | **Bibliotecas** | Apenas a biblioteca padrão (`java.util`, `java.lang.Math`) |
 | **Build** | `javac` / launcher de código-fonte do `java` (sem Maven ou Gradle) |
-| **IDE** | IntelliJ IDEA (projeto `.iml` e `.idea/` versionados) |
+| **IDE** | IntelliJ IDEA (módulo `.iml` versionado; a pasta `.idea/` é ignorada pelo git) |
 
 ---
 
@@ -172,7 +172,6 @@ Os números usam o separador decimal da localidade do sistema (vírgula em pt-BR
 
 ```text
 applied-computational-mathematics/
-├── .idea/                               # Configuração do projeto no IntelliJ IDEA (JDK 25)
 ├── A3 - Matematica Computacional.iml    # Módulo do IntelliJ IDEA
 ├── docs/
 │   ├── notice.md                        # Edital da A3 (Projeto 1, Versão A)
